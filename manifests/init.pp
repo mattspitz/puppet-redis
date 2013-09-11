@@ -79,19 +79,19 @@ class redis (
     unless  => "/usr/bin/test -f ${redis_pkg}",
     require => File[$redis_src_dir],
   }
+  ~> exec { 'unpack-redis':
+    command     => "tar --strip-components 1 -xzf ${redis_pkg}",
+    cwd         => $redis_src_dir,
+    path        => '/bin:/usr/bin',
+    refreshonly => true
+  }
 
   file { 'redis-cli-link':
     ensure => link,
     path   => '/usr/local/bin/redis-cli',
     target => "${redis_bin_dir}/bin/redis-cli",
   }
-  exec { 'unpack-redis':
-    command => "tar --strip-components 1 -xzf ${redis_pkg}",
-    cwd     => $redis_src_dir,
-    path    => '/bin:/usr/bin',
-    unless  => "test -f ${redis_src_dir}/Makefile",
-    require => Exec['get-redis-pkg'],
-  }
+
   exec { 'install-redis':
     command => "make && make install PREFIX=${redis_bin_dir}",
     cwd     => $redis_src_dir,
