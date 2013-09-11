@@ -93,7 +93,7 @@ class redis (
   }
 
   exec { 'install-redis':
-    command => "make && make install PREFIX=${redis_bin_dir}",
+    command => "make clean && make && make install PREFIX=${redis_bin_dir}",
     cwd     => $redis_src_dir,
     path    => '/bin:/usr/bin',
     unless  => "test $(${redis_bin_dir}/bin/redis-server --version | cut -d ' ' -f 3) = \"v=${version}\"",
